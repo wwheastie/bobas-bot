@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.netflix.archaius:archaius2-api:2.3.16"
+    implementation "com.netflix.archaius:archaius2-core:2.3.16"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.10.1"
+    implementation "com.vdurmont:emoji-java:5.1.1"
+    implementation 'ma.glasnost.orika:orika-core:1.5.4'
+    implementation "mysql:mysql-connector-java:8.0.26"
+    implementation "org.javacord:javacord:3.4.0"
+    implementation "org.apache.commons:commons-collections4:4.4"
+    implementation "org.apache.commons:commons-text:1.9"
+    implementation "org.springframework.boot:spring-boot-starter:2.5.4"
+    implementation "org.springframework.boot:spring-boot-starter-data-jdbc:2.5.4"
+    implementation "org.springframework.boot:spring-boot-starter-jersey:2.5.4"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
+
+}
+
+test {
+    useJUnitPlatform()
+}
