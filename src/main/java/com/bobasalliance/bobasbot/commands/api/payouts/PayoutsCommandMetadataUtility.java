@@ -29,7 +29,7 @@ public class PayoutsCommandMetadataUtility {
 
 	private static CommandOptionMetadata createRequiredStringOption(final String name, final String description) {
 		return new CommandOptionMetadata.Builder(name, description)
-				.fieldType(FieldType.String)
+				.fieldType(FieldType.STRING)
 				.required(true)
 				.build();
 	}

@@ -1,10 +1,15 @@
 package com.bobasalliance.bobasbot.discord.listener;
 
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
+import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +20,8 @@ import com.bobasalliance.bobasbot.commands.beans.CommandAnswer;
 import com.bobasalliance.bobasbot.commands.beans.EventDetails;
 import com.bobasalliance.bobasbot.commands.factory.CommandFactory;
 import com.bobasalliance.bobasbot.discord.mapper.SlashCommandEventToEventDetailsMapper;
+import com.bobasalliance.bobasbot.discord.repository.CommandHistoryDao;
+import com.bobasalliance.bobasbot.discord.repository.CommandHistoryRepository;
 
 import ma.glasnost.orika.BoundMapperFacade;
 
@@ -25,19 +32,22 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 	private static final String UNEXPECTED_ERROR_MESSAGE = "Unexpected error occurred while processing your request.";
 
 	private final CommandFactory commandFactory;
+	private final CommandHistoryRepository commandHistoryRepository;
 	private final BoundMapperFacade<SlashCommandCreateEvent, EventDetails> slashCommandCreateEventToEventDetailsMapper;
 
-	public DiscordSlashCommandEventListener(final CommandFactory commandFactory,
+	public DiscordSlashCommandEventListener(final CommandFactory commandFactory, final CommandHistoryRepository commandHistoryRepository,
 			final SlashCommandEventToEventDetailsMapper slashCommandEventToEventDetailsMapper) {
 		this.commandFactory = commandFactory;
+		this.commandHistoryRepository = commandHistoryRepository;
 		this.slashCommandCreateEventToEventDetailsMapper = slashCommandEventToEventDetailsMapper.dedicatedMapperFor(SlashCommandCreateEvent.class,
 				EventDetails.class);
 	}
 
 	@Override
 	public void onSlashCommandCreate(final SlashCommandCreateEvent event) {
+		final long startTimestamp = System.currentTimeMillis();
 		try {
-			// TODO: Add logging information about event request details
+			logCommandRequest(event.getSlashCommandInteraction());
 			final Command command = getCommand(event);
 			final EventDetails eventDetails = getEventDetails(event);
 			final CommandAnswer answer = executeCommand(command, eventDetails);
@@ -46,8 +56,23 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 			LOG.error(e.getMessage(), e);
 			replyErrorMessage(event);
 		} finally {
-			// TODO: Add insert into command history
+			insertCommandHistory(event.getSlashCommandInteraction(), startTimestamp);
 		}
+	}
+
+	private void logCommandRequest(final SlashCommandInteraction interaction) {
+		String logMessage = String.format("onMessageCreate "
+				+ "channel=%s "
+				+ "server=%s "
+				+ "authorId=%s "
+				+ "authorDiscordUser=%s "
+				+ "message='%s'",
+				interaction.getChannel().get().getIdAsString(),
+				interaction.getServer().orElse(null),
+				interaction.getUser().getIdAsString(),
+				interaction.getUser().getDiscriminatedName(),
+				interaction.getCommandName() + " " + StringUtils.joinWith(" ", interaction.getArguments()));
+		LOG.info(logMessage);
 	}
 
 	private Command getCommand(final SlashCommandCreateEvent event) {
@@ -81,5 +106,24 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 
 	private void replyErrorMessage(final SlashCommandCreateEvent event) {
 		event.getSlashCommandInteraction().createImmediateResponder().setContent(UNEXPECTED_ERROR_MESSAGE).respond();
+	}
+
+	private void insertCommandHistory(final SlashCommandInteraction interaction, final long startTimestamp) {
+		final CommandHistoryDao dao = createCommandHistoryDao(interaction, startTimestamp);
+		commandHistoryRepository.insert(dao.getCommand(), dao.getTimestamp(), dao.getUserId(), dao.getUserName(),
+				dao.getServerId(), dao.getServerName(), dao.getServerRegion(), dao.getExecutionTime());
+	}
+
+	private CommandHistoryDao createCommandHistoryDao(final SlashCommandInteraction interaction, final long startTimestamp) {
+		CommandHistoryDao dao = new CommandHistoryDao();
+		dao.setCommand(interaction.getCommandName());
+		dao.setTimestamp(new Timestamp(new Date().getTime()));
+		dao.setUserId(interaction.getUser().getIdAsString());
+		dao.setUserName(interaction.getUser().getName());
+		dao.setServerId(interaction.getServer().get().getIdAsString());
+		dao.setServerName(interaction.getServer().get().getName());
+		dao.setServerRegion(interaction.getServer().get().getRegion().getKey().toUpperCase(Locale.ROOT));
+		dao.setExecutionTime(System.currentTimeMillis() - startTimestamp);
+		return dao;
 	}
 }
