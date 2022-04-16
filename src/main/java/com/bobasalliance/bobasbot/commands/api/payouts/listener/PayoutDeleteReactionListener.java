@@ -10,7 +10,7 @@ import com.bobasalliance.bobasbot.commands.beans.EventDetails;
 import com.vdurmont.emoji.Emoji;
 
 public class PayoutDeleteReactionListener extends AbstractReactionListener {
-	private static final String USER_REMOVED_CONFIRMATION_MESSAGE = "%s has been removed";
+	private static final String SUCCESSFUL_DELETION_MESSAGE = "%s has successfully been removed from payout list";
 
 	private final PayoutTimeRepository payoutTimeRepository;
 	private final EventDetails eventDetails;
@@ -26,6 +26,6 @@ public class PayoutDeleteReactionListener extends AbstractReactionListener {
 	protected Optional<String> doReaction(final ReactionAddEvent event) {
 		final String userName = eventDetails.getOption(PayoutsCommandMetadataUtility.USER_NAME_COMMAND_OPTION);
 		payoutTimeRepository.deleteByChannelIdAndUserName(eventDetails.getChannelId(), userName);
-		return Optional.of(String.format(USER_REMOVED_CONFIRMATION_MESSAGE, userName));
+		return Optional.of(String.format(SUCCESSFUL_DELETION_MESSAGE, userName));
 	}
 }

@@ -34,6 +34,7 @@ public class SlashCommandEventToEventDetailsMapper extends ConfigurableMapper {
 
 			return new EventDetails.Builder()
 					.options(getOptionsMap(slashCommandCreateEvent))
+					.server(slashCommandCreateEvent.getSlashCommandInteraction().getServer().get())
 					.user(slashCommandCreateEvent.getSlashCommandInteraction().getUser())
 					.channelId(slashCommandCreateEvent.getSlashCommandInteraction().getChannel().get().getIdAsString())
 					.subCommandName(getSubCommand(slashCommandCreateEvent))

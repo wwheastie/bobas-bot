@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.springframework.stereotype.Component;
 
+import com.bobasalliance.bobasbot.commands.AdminUtility;
 import com.bobasalliance.bobasbot.commands.api.ReactionEmojis;
 import com.bobasalliance.bobasbot.commands.api.payouts.PayoutTimeRepository;
 import com.bobasalliance.bobasbot.commands.api.payouts.PayoutsCommandMetadataUtility;
@@ -19,7 +20,6 @@ import com.vdurmont.emoji.Emoji;
 public class PayoutsDeleteSubCommand implements PayoutsSubCommand {
 	private static final String PAYOUT_DELETE_TITLE = "Delete User from Payouts List";
 	private static final String MESSAGE_CONFIRM_DELETE = "Are you sure you want to remove **%s** ? **'Check' to remove, 'X' to keep.**";
-	private static final String SUCCESSFUL_DELETION_MESSAGE = "%s has successfully been removed from payout list";
 	private static final String NO_USERS_IN_CHANNEL_ERROR_MESSAGE = "%s does not exist in channel";
 	private static final String NON_ADMIN_USER_MESSAGE = "You may not execute this command.\nYou must be part of the «botAdmins» Discord group to administrate the bot.";
 
@@ -38,7 +38,7 @@ public class PayoutsDeleteSubCommand implements PayoutsSubCommand {
 
 	@Override
 	public CommandAnswer execute(final EventDetails eventDetails) {
-		if (isAdmin()) {
+		if (isAdmin(eventDetails)) {
 			final String channelId = eventDetails.getChannelId();
 			final String userName = eventDetails.getOption(PayoutsCommandMetadataUtility.USER_NAME_COMMAND_OPTION);
 
@@ -52,9 +52,8 @@ public class PayoutsDeleteSubCommand implements PayoutsSubCommand {
 		return isNotAdminCommandAnswer();
 	}
 
-	private boolean isAdmin() {
-		// TODO: Perform database operation to check
-		return true;
+	private boolean isAdmin(final EventDetails eventDetails) {
+		return AdminUtility.isAdmin(eventDetails.getUser(), eventDetails.getServer());
 	}
 
 	private boolean userDoesNotExist(final String channelId, final String userName) {
@@ -83,9 +82,6 @@ public class PayoutsDeleteSubCommand implements PayoutsSubCommand {
 	}
 
 	private CommandAnswer isNotAdminCommandAnswer() {
-		EmbedBuilder embedMessage = embedMessageBuilderFactory.getEmbedMessageBuilder(MessageType.SUCCESS)
-				.setTitle(PAYOUT_DELETE_TITLE)
-				.addField("", NON_ADMIN_USER_MESSAGE, false);
-		return new CommandAnswer.Builder().embedMessages(Arrays.asList(embedMessage)).build();
+		return new CommandAnswer.Builder().message(NON_ADMIN_USER_MESSAGE).build();
 	}
 }
