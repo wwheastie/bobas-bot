@@ -3,6 +3,8 @@ package com.bobasalliance.bobasbot.commands.api.payouts;
 import org.springframework.stereotype.Component;
 
 import com.bobasalliance.bobasbot.commands.api.Command;
+import com.bobasalliance.bobasbot.commands.api.payouts.sub.commands.PayoutsSubCommand;
+import com.bobasalliance.bobasbot.commands.api.payouts.sub.commands.PayoutsSubCommandFactory;
 import com.bobasalliance.bobasbot.commands.beans.CommandAnswer;
 import com.bobasalliance.bobasbot.commands.beans.CommandMetadata;
 import com.bobasalliance.bobasbot.commands.beans.EventDetails;

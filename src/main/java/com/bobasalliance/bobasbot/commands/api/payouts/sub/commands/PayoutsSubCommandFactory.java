@@ -1,4 +1,4 @@
-package com.bobasalliance.bobasbot.commands.api.payouts;
+package com.bobasalliance.bobasbot.commands.api.payouts.sub.commands;
 
 import java.util.Map;
 import java.util.Set;

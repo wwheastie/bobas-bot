@@ -127,6 +127,8 @@ public class ModsCommand implements Command {
 			embedBuilder.addField(title, characterModsDto.getModsFormatted(), true);
 		}
 
+		embedBuilder.addField("Description", characterDto.getDescription(), false);
+
 		return embedBuilder;
 	}
 

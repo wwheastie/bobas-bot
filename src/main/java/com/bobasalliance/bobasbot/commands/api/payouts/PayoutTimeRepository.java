@@ -16,7 +16,7 @@ public interface PayoutTimeRepository extends CrudRepository<PayoutTimeDao, Stri
 	List<PayoutTimeDao> findAllByChannelIdOrderByPayoutTimeAndUserName(@Param("channelId") String channelId);
 
 	@Query("SELECT * FROM payoutTime p WHERE p.channelId = :channelId AND p.userName = :userName")
-	Optional<PayoutTimeDao> findByChannelIdAndUserName(String channelId, String userName);
+	Optional<PayoutTimeDao> findByChannelIdAndUserName(@Param("channelId") String channelId, @Param("userName") String userName);
 
 	@Modifying
 	@Query("INSERT INTO payoutTime VALUES (:channelId, :userName, :payoutTime, :flag, :swgohggLink)")
@@ -24,5 +24,5 @@ public interface PayoutTimeRepository extends CrudRepository<PayoutTimeDao, Stri
 
 	@Modifying
 	@Query("DELETE FROM payoutTime p WHERE p.channelId = :channelId AND p.userName = :userName")
-	void deleteByChannelIdAndUserName(String channelId, String userName);
+	void deleteByChannelIdAndUserName(@Param("channelId") String channelId, @Param("userName") String userName);
 }

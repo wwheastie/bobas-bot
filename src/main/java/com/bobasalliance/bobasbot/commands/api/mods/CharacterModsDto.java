@@ -1,7 +1,7 @@
 package com.bobasalliance.bobasbot.commands.api.mods;
 
 public class CharacterModsDto {
-	private static final String CHARACTER_MODS_MESSAGE = "**Set 1** : %s\n**Set 2** : %s\n**Set 3** : %s\n\n**☐** : %s | **➚** : %s\n**◆** : %s | **Δ** : %s\n**O** : %s | **✙** : %s\n ";
+	private static final String CHARACTER_MODS_MESSAGE = "**Set 1** : %s\n**Set 2** : %s\n**Set 3** : %s\n\n**☐** : %s | **➚** : %s\n**◆** : %s | **Δ** : %s\n**O** : %s | **✙** : %s\n\n ";
 	private static final String OFFENSE = "Offense";
 	private static final String DEFENSE = "Defense";
 
