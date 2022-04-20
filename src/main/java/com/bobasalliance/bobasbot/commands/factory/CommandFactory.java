@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
-import com.bobasalliance.bobasbot.commands.api.Command;
+import com.bobasalliance.bobasbot.commands.commands.Command;
 
 @Component
 public class CommandFactory {

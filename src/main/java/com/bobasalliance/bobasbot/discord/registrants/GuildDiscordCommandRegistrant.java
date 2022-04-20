@@ -2,10 +2,8 @@ package com.bobasalliance.bobasbot.discord.registrants;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
-import com.bobasalliance.bobasbot.commands.api.Command;
 import com.bobasalliance.bobasbot.commands.beans.CommandMetadata;
+import com.bobasalliance.bobasbot.commands.commands.Command;
 import com.bobasalliance.bobasbot.commands.factory.CommandFactory;
 import com.bobasalliance.bobasbot.discord.beans.DiscordCommandMetadata;
 import com.bobasalliance.bobasbot.discord.beans.DiscordCommandOptionMetadata;
@@ -14,7 +12,7 @@ import com.bobasalliance.bobasbot.discord.mapper.DiscordCommandMetadataMapper;
 
 import ma.glasnost.orika.BoundMapperFacade;
 
-@Component
+//@Component
 public class GuildDiscordCommandRegistrant implements DiscordCommandRegistrant {
 	private final DiscordClient discordClient;
 	private final CommandFactory commandFactory;

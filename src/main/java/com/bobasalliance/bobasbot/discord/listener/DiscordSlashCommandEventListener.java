@@ -5,19 +5,21 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.bobasalliance.bobasbot.commands.api.Command;
 import com.bobasalliance.bobasbot.commands.beans.CommandAnswer;
 import com.bobasalliance.bobasbot.commands.beans.EventDetails;
+import com.bobasalliance.bobasbot.commands.commands.Command;
 import com.bobasalliance.bobasbot.commands.factory.CommandFactory;
 import com.bobasalliance.bobasbot.discord.mapper.SlashCommandEventToEventDetailsMapper;
 import com.bobasalliance.bobasbot.discord.repository.CommandHistoryDao;
@@ -71,7 +73,8 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 				interaction.getServer().orElse(null),
 				interaction.getUser().getIdAsString(),
 				interaction.getUser().getDiscriminatedName(),
-				interaction.getCommandName() + " " + StringUtils.joinWith(" ", interaction.getArguments()));
+				interaction.getCommandName() + " " + StringUtils.joinWith(" ",
+						interaction.getArguments().stream().map(SlashCommandInteractionOption::getStringValue).collect(Collectors.toList())));
 		LOG.info(logMessage);
 	}
 
@@ -95,6 +98,11 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 				sentMessage.addMessageAttachableListener(answer.getReactionListener())
 						.forEach(manager -> manager.removeAfter(10, TimeUnit.MINUTES));
 			});
+		} else if (answer.hasFile()) {
+			if (answer.hasMessage()) {
+				event.getSlashCommandInteraction().getChannel().get().sendMessage(answer.getMessage());
+			}
+			event.getSlashCommandInteraction().getChannel().get().sendMessage(answer.getFile());
 		} else if (answer.hasEmbedMessages()) {
 			event.getSlashCommandInteraction().createImmediateResponder().addEmbeds(answer.getEmbedMessages()).respond();
 		} else if (answer.hasMessage()) {

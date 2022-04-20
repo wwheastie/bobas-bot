@@ -6,7 +6,11 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
+import com.bobasalliance.bobasbot.commands.beans.CommandAnswer;
+
 public class AdminUtility {
+	private static final String NON_ADMIN_USER_MESSAGE = "You may not execute this command.\nYou must be part of the «botAdmins» Discord group to administrate the bot.";
+
 	private static final Set<Integer> ADMIN_USERS = Set.of(8591, 8431);
 	private static final Set<String> ADMIN_GROUP = Set.of("botadmins");
 
@@ -26,6 +30,10 @@ public class AdminUtility {
 		}
 
 		return false;
+	}
+
+	public static CommandAnswer isNotAdminCommandAnswer() {
+		return new CommandAnswer.Builder().message(NON_ADMIN_USER_MESSAGE).build();
 	}
 
 	private AdminUtility() {}

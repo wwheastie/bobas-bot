@@ -1,0 +1,30 @@
+{
+  "discordToken": "YOUR_DISCORD_TOKEN",
+  "modsJsonURI": "https://apps.crouchingrancor.com/mods/advisor.json",
+  "applicationId": "YOUR_APPLICATION_ID",
+  "guildId": "YOUR_GUILD_ID",
+  "botAdmins": {
+    "groups": [
+      "botadmins",
+      "botAdmins"
+    ],
+    "users": [
+      8591,
+      8431
+    ]
+  },
+  "database": {
+    "url": "LOCAL_DATABASE_URL",
+    "user": "DATABASE_USERNAME",
+    "pwd": "DATABASE_PASSWORD"
+  },
+  "swgohAPI": {
+    "user": "YOUR_USERNAME",
+    "pwd": "YOUR_PASSWORD"
+  },
+  "characterPortraits": {
+    "localDir": "/var/www/swgoh/images/characters",
+    "externalURI": "https://jbellion.fr/swgoh/images/characters/%s.png"
+  },
+  "messages": "en"
+}

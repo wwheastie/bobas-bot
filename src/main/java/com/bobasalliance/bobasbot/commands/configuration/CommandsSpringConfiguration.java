@@ -7,14 +7,16 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.bobasalliance.bobasbot.discord.configuration.Settings;
+
 @Configuration
 public class CommandsSpringConfiguration {
 	@Bean
-	public DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
+	public DataSource getDataSource(final Settings settings) {
 		return DataSourceBuilder.create()
-				.url(dataSourceConfiguration.getUrl())
-				.username(dataSourceConfiguration.getUsername())
-				.password(dataSourceConfiguration.getPassword())
+				.url(settings.getDatabaseUrl())
+				.username(settings.getDatabaseUrl())
+				.password(settings.getDatabasePassword())
 				.build();
 	}
 

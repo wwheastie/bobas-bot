@@ -1,5 +1,6 @@
 package com.bobasalliance.bobasbot.commands.beans;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,25 +12,33 @@ import com.vdurmont.emoji.Emoji;
 
 public class CommandAnswer {
 	private final String message;
+	private final File file;
 	private final List<EmbedBuilder> embedMessages;
 	private final ReactionAddListener reactionListener;
 	private final List<Emoji> reactionEmojis;
 	private final boolean hasMessage;
+	private final boolean hasFile;
 	private final boolean hasEmbedMessages;
 	private final boolean hasReactionListener;
 
 	private CommandAnswer(final Builder builder) {
 		this.message = builder.message;
+		this.file = builder.file;
 		this.embedMessages = builder.embedMessages;
 		this.reactionListener = builder.reactionListener;
 		this.reactionEmojis = builder.reactionEmojis;
 		this.hasMessage = StringUtils.isNotEmpty(message);
+		this.hasFile = file != null;
 		this.hasEmbedMessages = CollectionUtils.isNotEmpty(embedMessages);
 		this.hasReactionListener = reactionListener != null;
 	}
 
 	public String getMessage() {
 		return message;
+	}
+
+	public File getFile() {
+		return file;
 	}
 
 	public List<EmbedBuilder> getEmbedMessages() {
@@ -48,6 +57,10 @@ public class CommandAnswer {
 		return hasMessage;
 	}
 
+	public boolean hasFile() {
+		return hasFile;
+	}
+
 	public boolean hasEmbedMessages() {
 		return hasEmbedMessages;
 	}
@@ -58,12 +71,18 @@ public class CommandAnswer {
 
 	public static class Builder {
 		private String message;
+		private File file;
 		private List<EmbedBuilder> embedMessages;
 		private ReactionAddListener reactionListener;
 		private List<Emoji> reactionEmojis;
 
 		public Builder message(final String message) {
 			this.message = message;
+			return this;
+		}
+
+		public Builder file(final File file) {
+			this.file = file;
 			return this;
 		}
 
