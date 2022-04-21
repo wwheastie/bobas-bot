@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.springframework.stereotype.Component;
 
-import com.bobasalliance.bobasbot.commands.AdminUtility;
+import com.bobasalliance.bobasbot.commands.AdminService;
 import com.bobasalliance.bobasbot.commands.DiscordMessageUtility;
 import com.bobasalliance.bobasbot.commands.ReactionEmojis;
 import com.bobasalliance.bobasbot.commands.beans.CommandAnswer;
@@ -25,10 +25,13 @@ public class PayoutsDeleteSubCommand implements PayoutsSubCommand {
 
 	private final PayoutTimeRepository payoutTimeRepository;
 	private final DiscordEmbedMessageBuilderFactory embedMessageBuilderFactory;
+	private final AdminService adminService;
 
-	public PayoutsDeleteSubCommand(final PayoutTimeRepository payoutTimeRepository, final DiscordEmbedMessageBuilderFactory embedMessageBuilderFactory) {
+	public PayoutsDeleteSubCommand(final PayoutTimeRepository payoutTimeRepository, final DiscordEmbedMessageBuilderFactory embedMessageBuilderFactory,
+			final AdminService adminService) {
 		this.payoutTimeRepository = payoutTimeRepository;
 		this.embedMessageBuilderFactory = embedMessageBuilderFactory;
+		this.adminService = adminService;
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class PayoutsDeleteSubCommand implements PayoutsSubCommand {
 	}
 
 	private boolean isAdmin(final EventDetails eventDetails) {
-		return AdminUtility.isAdmin(eventDetails.getUser(), eventDetails.getServer());
+		return adminService.isAdmin(eventDetails.getUser(), eventDetails.getServer());
 	}
 
 	private boolean userDoesNotExist(final String channelId, final String userName) {
@@ -82,6 +85,6 @@ public class PayoutsDeleteSubCommand implements PayoutsSubCommand {
 	}
 
 	private CommandAnswer isNotAdminCommandAnswer() {
-		return AdminUtility.isNotAdminCommandAnswer();
+		return adminService.isNotAdminCommandAnswer();
 	}
 }

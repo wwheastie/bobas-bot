@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.bobasalliance.bobasbot.commands.AdminUtility;
+import com.bobasalliance.bobasbot.commands.AdminService;
 import com.bobasalliance.bobasbot.commands.beans.CommandAnswer;
 import com.bobasalliance.bobasbot.commands.beans.EventDetails;
 import com.bobasalliance.bobasbot.commands.commands.payouts.PayoutTimeRepository;
@@ -49,10 +49,13 @@ public class PayoutsAddSubCommand implements PayoutsSubCommand {
 
 	private final PayoutTimeRepository payoutTimeRepository;
 	private final DiscordEmbedMessageBuilderFactory discordEmbedMessageBuilderFactory;
+	private final AdminService adminService;
 
-	public PayoutsAddSubCommand(final PayoutTimeRepository payoutTimeRepository, final DiscordEmbedMessageBuilderFactory discordEmbedMessageBuilderFactory) {
+	public PayoutsAddSubCommand(final PayoutTimeRepository payoutTimeRepository, final DiscordEmbedMessageBuilderFactory discordEmbedMessageBuilderFactory,
+			final AdminService adminService) {
 		this.payoutTimeRepository = payoutTimeRepository;
 		this.discordEmbedMessageBuilderFactory = discordEmbedMessageBuilderFactory;
+		this.adminService = adminService;
 	}
 
 	@Override
@@ -70,7 +73,7 @@ public class PayoutsAddSubCommand implements PayoutsSubCommand {
 	}
 
 	private boolean isAdmin(final EventDetails eventDetails) {
-		return AdminUtility.isAdmin(eventDetails.getUser(), eventDetails.getServer());
+		return adminService.isAdmin(eventDetails.getUser(), eventDetails.getServer());
 	}
 
 	private CommandAnswer addUserConfirmationCommandAnswer(final EventDetails eventDetails) {
@@ -262,6 +265,6 @@ public class PayoutsAddSubCommand implements PayoutsSubCommand {
 	}
 
 	private CommandAnswer isNotAdminCommandAnswer() {
-		return AdminUtility.isNotAdminCommandAnswer();
+		return adminService.isNotAdminCommandAnswer();
 	}
 }
