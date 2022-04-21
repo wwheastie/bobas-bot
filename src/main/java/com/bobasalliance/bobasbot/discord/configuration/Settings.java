@@ -33,7 +33,7 @@ public class Settings {
 	}
 
 	public String getDatabasePassword() {
-		return settingsJsonObject.getJSONObject("database").getString("password");
+		return settingsJsonObject.getJSONObject("database").getString("pwd");
 	}
 
 	public String getApplicationId() {

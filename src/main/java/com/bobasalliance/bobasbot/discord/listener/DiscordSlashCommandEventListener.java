@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
-import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,11 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 				interaction.getUser().getIdAsString(),
 				interaction.getUser().getDiscriminatedName(),
 				interaction.getCommandName() + " " + StringUtils.joinWith(" ",
-						interaction.getArguments().stream().map(SlashCommandInteractionOption::getStringValue).collect(Collectors.toList())));
+						interaction.getArguments()
+								.stream()
+								.map(slashCommandInteractionOption -> slashCommandInteractionOption.getStringValue()
+										.orElse("Unknown"))
+								.collect(Collectors.toList())));
 		LOG.info(logMessage);
 	}
 

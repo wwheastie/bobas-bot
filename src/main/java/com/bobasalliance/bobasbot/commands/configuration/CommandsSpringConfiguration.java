@@ -15,7 +15,7 @@ public class CommandsSpringConfiguration {
 	public DataSource getDataSource(final Settings settings) {
 		return DataSourceBuilder.create()
 				.url(settings.getDatabaseUrl())
-				.username(settings.getDatabaseUrl())
+				.username(settings.getDatabaseUser())
 				.password(settings.getDatabasePassword())
 				.build();
 	}
