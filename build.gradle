@@ -34,5 +34,5 @@ test {
 
 bootJar {
     archiveBaseName = 'bobas-bot'
-    archiveVersion = '1.0.0'
+    archiveVersion = '1.1.0'
 }
