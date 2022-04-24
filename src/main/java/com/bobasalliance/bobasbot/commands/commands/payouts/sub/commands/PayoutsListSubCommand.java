@@ -42,7 +42,8 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 
 	@Override
 	public CommandAnswer execute(final EventDetails eventDetails) {
-		List<PayoutTimeDao> payoutTimes = payoutTimeRepository.findAllByChannelIdOrderByPayoutTimeAndUserName(eventDetails.getChannelId());
+		List<PayoutTimeDao> payoutTimes = payoutTimeRepository
+				.findAllByChannelIdOrderByPayoutTimeAndUserName(eventDetails.getChannelId());
 		return CollectionUtils.isNotEmpty(payoutTimes) ? payoutTimesCommandAnswer(payoutTimes) : noUsersInChannelCommandAnswer();
 	}
 
