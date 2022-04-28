@@ -53,7 +53,9 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 			final Command command = getCommand(event);
 			final EventDetails eventDetails = getEventDetails(event);
 			final CommandAnswer answer = executeCommand(command, eventDetails);
+			logCommandSuccessfullyExecuted(event.getSlashCommandInteraction(), startTimestamp);
 			reply(event, answer);
+			logCommandSuccessfullyResponded(event.getSlashCommandInteraction(), startTimestamp);
 		} catch (final Exception e) {
 			LOG.error(e.getMessage(), e);
 			replyErrorMessage(event);
@@ -84,6 +86,28 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 		} catch (final Exception e) {
 			LOG.error("Could not log user info", e);
 		}
+	}
+
+	private void logCommandSuccessfullyExecuted(final SlashCommandInteraction interaction, final long startTimestamp) {
+		String command = interaction.getCommandName() + " " + StringUtils.joinWith(" ",
+				interaction.getArguments()
+						.stream()
+						.map(slashCommandInteractionOption -> slashCommandInteractionOption.getStringValue()
+								.orElse("Unknown"))
+						.collect(Collectors.toList()));
+		long totalRunTime = System.currentTimeMillis() - startTimestamp;
+		double totalRunTimeInSeconds = totalRunTime / 1000.00;
+		String logMessage = String.format("Command {%s} by {%s} completed in {%.03fs}", command,
+				interaction.getUser().getDiscriminatedName(), totalRunTimeInSeconds);
+		LOG.info(logMessage);
+	}
+
+	private void logCommandSuccessfullyResponded(final SlashCommandInteraction interaction, final long startTimestamp) {
+		long totalRunTime = System.currentTimeMillis() - startTimestamp;
+		double totalRunTimeInSeconds = totalRunTime / 1000.00;
+		String logMessage = String.format("Replied to {%s}'s message in {%.03fs}", interaction.getUser().getDiscriminatedName(),
+				totalRunTimeInSeconds);
+		LOG.info(logMessage);
 	}
 
 	private Command getCommand(final SlashCommandCreateEvent event) {

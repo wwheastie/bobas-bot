@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.springframework.stereotype.Component;
@@ -34,11 +35,19 @@ public class SlashCommandEventToEventDetailsMapper extends ConfigurableMapper {
 
 			return new EventDetails.Builder()
 					.options(getOptionsMap(slashCommandCreateEvent))
-					.server(slashCommandCreateEvent.getSlashCommandInteraction().getServer().get())
+					.server(getServer(slashCommandCreateEvent))
 					.user(slashCommandCreateEvent.getSlashCommandInteraction().getUser())
 					.channelId(slashCommandCreateEvent.getSlashCommandInteraction().getChannel().get().getIdAsString())
 					.subCommandName(getSubCommand(slashCommandCreateEvent))
 					.build();
+		}
+
+		private Server getServer(final SlashCommandCreateEvent event) {
+			return event.getSlashCommandInteraction()
+					.getServer()
+					.orElse(null)
+					.getCurrentCachedInstance()
+					.orElse(null);
 		}
 
 		private Map<String, String> getOptionsMap(final SlashCommandCreateEvent event) {
