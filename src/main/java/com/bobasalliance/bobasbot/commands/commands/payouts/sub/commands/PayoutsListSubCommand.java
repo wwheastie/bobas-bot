@@ -50,8 +50,6 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 	private CommandAnswer payoutTimesCommandAnswer(final List<PayoutTimeDao> payoutTimeDaos) {
 		Map<Integer, String> embedContent = new TreeMap<Integer, String>();
 		TimeZone utc = TimeZone.getTimeZone("UTC");
-		EmbedBuilder embed = discordEmbedMessageBuilderFactory.getEmbedMessageBuilder(MessageType.SUCCESS);
-		embed.setTitle(PAYOUTS_LIST_TITLE);
 		ArrayList content = new ArrayList();
 		int index = 0;
 
@@ -95,6 +93,8 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 			content.add(contentLine);
 		}
 
+		ArrayList<EmbedBuilder> embedMessages = new ArrayList<>();
+
 		int i = 0;
 		int counter = 0;
 
@@ -104,19 +104,25 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 			modifiedContent += content.get(i) + "\n";
 			i++;
 			counter++;
-			if (counter == 20) {
-				embed.addField("Times", modifiedContent);
+			if (counter == 15) {
+				EmbedBuilder embedMessage = discordEmbedMessageBuilderFactory.getEmbedMessageBuilder(MessageType.SUCCESS);
+				embedMessage.setTitle(PAYOUTS_LIST_TITLE);
+				embedMessage.addField("Times", modifiedContent);
+				DiscordMessageUtility.addFooter(embedMessage);
 				modifiedContent = "";
 				counter = 0;
+				embedMessages.add(embedMessage);
 			}
 		}
 
-		embed.addField("Times", modifiedContent, false);
-
-		DiscordMessageUtility.addFooter(embed);
+		EmbedBuilder embedMessage = discordEmbedMessageBuilderFactory.getEmbedMessageBuilder(MessageType.SUCCESS);
+		embedMessage.setTitle(PAYOUTS_LIST_TITLE);
+		embedMessage.addField("Times", modifiedContent);
+		DiscordMessageUtility.addFooter(embedMessage);
+		embedMessages.add(embedMessage);
 
 		return new CommandAnswer.Builder()
-				.embedMessages(Collections.singletonList(embed))
+				.embedMessages(embedMessages)
 				.build();
 	}
 
