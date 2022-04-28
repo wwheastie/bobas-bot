@@ -54,7 +54,7 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 			final EventDetails eventDetails = getEventDetails(event);
 			final CommandAnswer answer = executeCommand(command, eventDetails);
 			reply(event, answer);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOG.error(e.getMessage(), e);
 			replyErrorMessage(event);
 		} finally {
@@ -130,6 +130,7 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 
 	private void replyErrorMessage(final SlashCommandCreateEvent event) {
 		event.getSlashCommandInteraction().createImmediateResponder().setContent(UNEXPECTED_ERROR_MESSAGE).respond();
+		return;
 	}
 
 	private void insertCommandHistory(final SlashCommandInteraction interaction, final long startTimestamp) {
