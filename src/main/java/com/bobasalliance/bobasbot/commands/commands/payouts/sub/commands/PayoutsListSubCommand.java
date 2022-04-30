@@ -3,6 +3,7 @@ package com.bobasalliance.bobasbot.commands.commands.payouts.sub.commands;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -50,8 +51,10 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 	private CommandAnswer payoutTimesCommandAnswer(final List<PayoutTimeDao> payoutTimeDaos) {
 		Map<Integer, String> embedContent = new TreeMap<Integer, String>();
 		TimeZone utc = TimeZone.getTimeZone("UTC");
-		ArrayList content = new ArrayList();
+		ArrayList<UserInfo> content = new ArrayList();
 		int index = 0;
+
+		Calendar now = getCalendarWithoutDate(utc);
 
 		for (final PayoutTimeDao payoutTimeDao : payoutTimeDaos) {
 			String userName = payoutTimeDao.getUserName();
@@ -87,10 +90,8 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 				contentLine = payoutTime.get(Calendar.HOUR_OF_DAY) + ":" + payoutMinute;
 			}
 
-			contentLine += builder.toString();
-
 			embedContent.put(index, contentLine);
-			content.add(contentLine);
+			content.add(new UserInfo(contentLine, builder.toString(), getCountdown(payoutTime, now)));
 		}
 
 		ArrayList<EmbedBuilder> embedMessages = new ArrayList<>();
@@ -99,9 +100,9 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 		int counter = 0;
 
 		String modifiedContent = "";
-		ArrayList<String> sortedContent = sortAscending(content);
+		ArrayList<UserInfo> sortedContent = sortAscending(content);
 		while (i < sortedContent.size()) {
-			modifiedContent += content.get(i) + "\n";
+			modifiedContent += content.get(i).toString() + "\n";
 			i++;
 			counter++;
 			if (counter == 15) {
@@ -126,7 +127,47 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 				.build();
 	}
 
-	private ArrayList<String> sortAscending(ArrayList arrayList) {
+	private String getCountdown(final Calendar payoutTime, final Calendar currentTime) {
+		Calendar countDownCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		countDownCalendar.setTime(payoutTime.getTime());
+
+		if (payoutTime.before(currentTime)) {
+			countDownCalendar.add(Calendar.DAY_OF_MONTH, 1);
+		}
+
+		Long difference = countDownCalendar.getTimeInMillis() - currentTime.getTimeInMillis();
+
+		Long hoursDifference = difference / (60 * 60 * 1000) % 24;
+		Long minutesDifference = difference / (60 * 1000) % 60;
+
+		if (minutesDifference < 0) {
+			minutesDifference += 60;
+			hoursDifference += 23;
+		}
+
+		String strHours = StringUtils.leftPad(hoursDifference.toString(), 2, "0");
+		String strMinutes = StringUtils.leftPad(minutesDifference.toString(), 2, "0");
+
+		return String.format("`%s:%s` ", strHours, strMinutes);
+	}
+
+	private GregorianCalendar getCalendarWithoutDate(TimeZone tz) {
+
+		GregorianCalendar calendar = new GregorianCalendar(tz);
+
+		Integer hours = calendar.get(Calendar.HOUR_OF_DAY);
+		Integer minutes = calendar.get(Calendar.MINUTE);
+
+		calendar.setTimeInMillis(0);
+
+		calendar.set(Calendar.HOUR_OF_DAY, hours);
+		calendar.set(Calendar.MINUTE, minutes);
+
+		calendar.getTimeInMillis();
+		return calendar;
+	}
+
+	private ArrayList<UserInfo> sortAscending(final ArrayList<UserInfo> arrayList) {
 		Collections.sort(arrayList);
 		return arrayList;
 	}
@@ -135,5 +176,40 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 		return new CommandAnswer.Builder()
 				.message(NO_USERS_IN_CHANNEL_ERROR_MESSAGE)
 				.build();
+	}
+
+	private class UserInfo implements Comparable<UserInfo> {
+		private static final String format = "%s%s [%s]";
+		private final String payoutTime;
+		private final String flagAndName;
+		private final String countDown;
+
+		public UserInfo(final String payoutTime, final String flagAndName, final String countDown) {
+			this.payoutTime = payoutTime;
+			this.flagAndName = flagAndName;
+			this.countDown = countDown;
+		}
+
+		public String getPayoutTime() {
+			return payoutTime;
+		}
+
+		public String getFlagAndName() {
+			return flagAndName;
+		}
+
+		public String getCountDown() {
+			return countDown;
+		}
+
+		@Override
+		public String toString() {
+			return String.format(format, payoutTime, flagAndName, countDown);
+		}
+
+		@Override
+		public int compareTo(final UserInfo otherUserInfo) {
+			return String.CASE_INSENSITIVE_ORDER.compare(this.getCountDown(), otherUserInfo.getCountDown());
+		}
 	}
 }
