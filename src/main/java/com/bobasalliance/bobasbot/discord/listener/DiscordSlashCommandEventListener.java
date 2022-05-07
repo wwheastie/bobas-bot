@@ -57,7 +57,7 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 			reply(event, answer);
 			logCommandSuccessfullyResponded(event.getSlashCommandInteraction(), startTimestamp);
 		} catch (final Exception e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("Error processing request: " + e.getMessage(), e);
 			replyErrorMessage(event);
 		} finally {
 			// TODO: Fix insertCommandHistory
@@ -115,7 +115,9 @@ public class DiscordSlashCommandEventListener implements SlashCommandCreateListe
 	}
 
 	private EventDetails getEventDetails(final SlashCommandCreateEvent event) {
-		return slashCommandCreateEventToEventDetailsMapper.map(event);
+		EventDetails eventDetails = slashCommandCreateEventToEventDetailsMapper.map(event);
+		LOG.info("Successfully captured event details");
+		return eventDetails;
 	}
 
 	private CommandAnswer executeCommand(final Command command, final EventDetails eventDetails) {

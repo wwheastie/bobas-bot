@@ -25,6 +25,8 @@ import com.bobasalliance.bobasbot.commands.factory.DiscordEmbedMessageBuilderFac
 
 @Component
 public class PayoutsListSubCommand implements PayoutsSubCommand {
+	private static final int MAX_FIELD_LENGTH = 1000;
+	private static final String CONTENT_LENGTH_TOO_LONG_ERROR = "Individual content line too long";
 	private static final String PAYOUTS_LIST_TITLE = "List of Payouts in order (UTC Time)";
 	private static final String NO_USERS_IN_CHANNEL_ERROR_MESSAGE = "No users has been registered in this channel. Please use **/payouts add**";
 
@@ -102,10 +104,13 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 		String modifiedContent = "";
 		ArrayList<UserInfo> sortedContent = sortAscending(content);
 		while (i < sortedContent.size()) {
-			modifiedContent += content.get(i).toString() + "\n";
-			i++;
-			counter++;
-			if (counter == 15) {
+			if (sortedContent.get(i).toString().length() > MAX_FIELD_LENGTH) {
+				return new CommandAnswer.Builder()
+						.message(CONTENT_LENGTH_TOO_LONG_ERROR)
+						.build();
+			}
+
+			if (modifiedContent.length() + content.get(i).toString().length() > MAX_FIELD_LENGTH) {
 				EmbedBuilder embedMessage = discordEmbedMessageBuilderFactory.getEmbedMessageBuilder(MessageType.SUCCESS);
 				embedMessage.setTitle(PAYOUTS_LIST_TITLE);
 				embedMessage.addField("Times", modifiedContent);
@@ -113,6 +118,10 @@ public class PayoutsListSubCommand implements PayoutsSubCommand {
 				modifiedContent = "";
 				counter = 0;
 				embedMessages.add(embedMessage);
+			} else {
+				modifiedContent += sortedContent.get(i).toString() + "\n";
+				i++;
+				counter++;
 			}
 		}
 
